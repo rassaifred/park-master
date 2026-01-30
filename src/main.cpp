@@ -6,6 +6,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
+// samir united
+
 // --- Pin Definitions ---
 #define ETH_CS          5
 #define RS485_RX        16
