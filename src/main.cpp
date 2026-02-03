@@ -1,81 +1,47 @@
 #include <Arduino.h>
-#include <SPI.h>
-#include <Ethernet.h>
-
+// Include ParkMaster Modules
 #include <ParkMasterDevice.h>
 #include <ParkMasterDisplay.h>
+#include <ParkMasterPushButton.h>
 #include <ParkMasterModbus.h>
+#include <ParkMasterEthernet.h>
 
-// --- Objects ---
-
-byte mac[] = MAC_ADDRESS;
-
+// Main Setup Function
 void setup()
 {
+  // Initialize Serial for debugging
   Serial.begin(115200);
-  pinMode(STATUS_LED, OUTPUT);
-
-  // 3. initialize Modbus
+  Serial.println("Starting ParkMaster ...");  
+  // 1. Setup Device
+  setupDevice();
+  // 2. Setup Push Button
+  setupPushButtnon();
+  // 3. Setup Modbus
   setupModBus();
-
-  // 1. Initialize OLED
+  // 4. Setup Display
   setupDsiplay();
-
-  // 2. Initialize Ethernet (W5500)
-  Ethernet.init(ETH_CS);
-  if (Ethernet.begin(mac) == 0)
-  {
-    display.println("Eth Failed (DHCP)");
-  }
-  else
-  {
-    display.print("IP: ");
-    display.println(Ethernet.localIP());
-  }
-  display.display();
-
-  // 3. Initialize Modbus (Hardware Serial 2)
-  Serial2.begin(9600, SERIAL_8N1, RS485_RX, RS485_TX);
-  node.begin(1, Serial2); // Slave ID 1
-  node.preTransmission(preTransmission);
-  node.postTransmission(postTransmission);
-
+  // 5. Setup Ethernet
+  setupEthernet();
+  // Initial delay
   delay(2000);
 }
 
+// Main Loop Function
 void loop()
 {
-
   // Update Display
   displayLoop();
-
-  uint8_t result;
-  uint16_t data[2];
-
-  // Example: Read 2 Holding Registers starting at address 0
-  result = node.readHoldingRegisters(0, 2);
-
-  display.println("--- MODBUS MASTER ---");
-
-  if (result == node.ku8MBSuccess)
-  {
-    digitalWrite(STATUS_LED, HIGH);
-    display.print("Reg0: ");
-    display.println(node.getResponseBuffer(0));
-    display.print("Reg1: ");
-    display.println(node.getResponseBuffer(1));
-  }
-  else
-  {
-    digitalWrite(STATUS_LED, LOW);
-    display.print("Error: ");
-    display.println(result, HEX);
-  }
-
-  display.setCursor(0, 50);
+  // Update Modbus
+  loopModbus();
+  // Show Button State
+  display.setCursor(0, 25);
+  display.print("Btn: "); 
+  display.println(isButtonPressed() ? "PRESSED" : "OFF");
+  // Show IP Address
   display.print("IP: ");
   display.print(Ethernet.localIP());
+  // Refresh Display
   display.display();
-
-  delay(1000);
+  // Small delay
+  delay(100);
 }
