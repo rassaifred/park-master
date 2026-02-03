@@ -6,21 +6,13 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-// samir united
-
-// --- Pin Definitions ---
-#define ETH_CS          5
-#define RS485_RX        16
-#define RS485_TX        17
-#define RS485_RE_DE     4
-#define STATUS_LED      2
-#define SDA_PIN         21
-#define SCL_PIN         22
+#include <ParkMasterDevice.h>
+#include <PakMasterDisplay.h>
 
 // --- Objects ---
-Adafruit_SSD1306 display(128, 64, &Wire, -1);
+
 ModbusMaster node;
-byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+byte mac[] = MAC_ADDRESS;
 
 // Callback for Modbus Flow Control
 void preTransmission()  { digitalWrite(RS485_RE_DE, HIGH); }
@@ -33,15 +25,7 @@ void setup() {
   digitalWrite(RS485_RE_DE, LOW);
 
   // 1. Initialize OLED
-  Wire.begin(SDA_PIN, SCL_PIN);
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println(F("OLED failed"));
-  }
-  display.clearDisplay();
-  display.setTextColor(WHITE);
-  display.setCursor(0,0);
-  display.println("Initializing...");
-  display.display();
+  setupDsiplay();
 
   // 2. Initialize Ethernet (W5500)
   Ethernet.init(ETH_CS);
@@ -63,14 +47,17 @@ void setup() {
 }
 
 void loop() {
+
+  // Update Display
+  displayLoop();
+
   uint8_t result;
   uint16_t data[2];
 
   // Example: Read 2 Holding Registers starting at address 0
   result = node.readHoldingRegisters(0, 2);
 
-  display.clearDisplay();
-  display.setCursor(0,0);
+  
   display.println("--- MODBUS MASTER ---");
 
   if (result == node.ku8MBSuccess) {
