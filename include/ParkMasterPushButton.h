@@ -13,7 +13,7 @@ void setupPushButtnon()
 
 bool isButtonPressed()
 {
-    return digitalRead(BUTTON_PIN) == LOW; // Active Low // bool btnState = digitalRead(BUTTON_PIN); // Active Low
+    return digitalRead(BUTTON_PIN) == LOW; // Active Low
 }
 
 #endif // PARK_MASTER_PUSH_BUTTON_H

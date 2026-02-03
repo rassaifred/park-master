@@ -11,7 +11,6 @@ void setup()
 {
   // Initialize Serial for debugging
   Serial.begin(115200);
-  Serial.println("Starting ParkMaster ...");  
   // 1. Setup Device
   setupDevice();
   // 2. Setup Push Button
