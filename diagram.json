@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "author": "Farid Meftahi",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    {"type": "board-ssd1306", "id": "oled1", "top": 178.21, "left": 117.97, "attrs": {}}
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "oled1:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "oled1:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "oled1:SCL", "esp:22", "green", [ "v0" ] ],
+    [ "oled1:SDA", "esp:21", "yellow", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}
