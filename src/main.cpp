@@ -1,37 +1,34 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <Ethernet.h>
-#include <ModbusMaster.h>
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
 
 #include <ParkMasterDevice.h>
 #include <PakMasterDisplay.h>
+#include <ParkMasterModbus.h>
 
 // --- Objects ---
 
-ModbusMaster node;
 byte mac[] = MAC_ADDRESS;
 
-// Callback for Modbus Flow Control
-void preTransmission()  { digitalWrite(RS485_RE_DE, HIGH); }
-void postTransmission() { digitalWrite(RS485_RE_DE, LOW);  }
-
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   pinMode(STATUS_LED, OUTPUT);
-  pinMode(RS485_RE_DE, OUTPUT);
-  digitalWrite(RS485_RE_DE, LOW);
+
+  // 3. initialize Modbus
+  setupModBus();
 
   // 1. Initialize OLED
   setupDsiplay();
 
   // 2. Initialize Ethernet (W5500)
   Ethernet.init(ETH_CS);
-  if (Ethernet.begin(mac) == 0) {
+  if (Ethernet.begin(mac) == 0)
+  {
     display.println("Eth Failed (DHCP)");
-  } else {
+  }
+  else
+  {
     display.print("IP: ");
     display.println(Ethernet.localIP());
   }
@@ -46,7 +43,8 @@ void setup() {
   delay(2000);
 }
 
-void loop() {
+void loop()
+{
 
   // Update Display
   displayLoop();
@@ -57,20 +55,26 @@ void loop() {
   // Example: Read 2 Holding Registers starting at address 0
   result = node.readHoldingRegisters(0, 2);
 
-  
   display.println("--- MODBUS MASTER ---");
 
-  if (result == node.ku8MBSuccess) {
+  if (result == node.ku8MBSuccess)
+  {
     digitalWrite(STATUS_LED, HIGH);
-    display.print("Reg0: "); display.println(node.getResponseBuffer(0));
-    display.print("Reg1: "); display.println(node.getResponseBuffer(1));
-  } else {
+    display.print("Reg0: ");
+    display.println(node.getResponseBuffer(0));
+    display.print("Reg1: ");
+    display.println(node.getResponseBuffer(1));
+  }
+  else
+  {
     digitalWrite(STATUS_LED, LOW);
-    display.print("Error: "); display.println(result, HEX);
+    display.print("Error: ");
+    display.println(result, HEX);
   }
 
   display.setCursor(0, 50);
-  display.print("IP: "); display.print(Ethernet.localIP());
+  display.print("IP: ");
+  display.print(Ethernet.localIP());
   display.display();
 
   delay(1000);

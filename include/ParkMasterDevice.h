@@ -3,9 +3,6 @@
 
 // --- Pin Definitions ---
 #define ETH_CS          5
-#define RS485_RX        16
-#define RS485_TX        17
-#define RS485_RE_DE     4
 #define STATUS_LED      2
 
 // --- MAC Address Definition ---
