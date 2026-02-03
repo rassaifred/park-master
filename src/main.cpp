@@ -3,7 +3,7 @@
 #include <Ethernet.h>
 
 #include <ParkMasterDevice.h>
-#include <PakMasterDisplay.h>
+#include <ParkMasterDisplay.h>
 #include <ParkMasterModbus.h>
 
 // --- Objects ---
